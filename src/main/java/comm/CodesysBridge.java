@@ -14,10 +14,12 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
+import com.sun.org.apache.bcel.internal.classfile.Code;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaMonitoredItem;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +36,7 @@ public class CodesysBridge extends OpcComm implements MessageListener {
 	public CodesysBridge() {
 	}
 
-	public void main(String[] args) throws Exception {
+	public static void main(String[] args) throws Exception {
 
 		// final ActorSystem system = ActorSystem.create("Runner");
 		// final ActorRef eventHandler =
@@ -42,15 +44,19 @@ public class CodesysBridge extends OpcComm implements MessageListener {
 		final String url = "opc.tcp://192.168.0.10:4840";
 		Scanner keyboard = new Scanner(System.in);
 
-		amq = new AMQBus();
-		amq.setupBus(this);
-
+		//amq = new AMQBus();
+		//amq.setupBus(this);
+		CodesysBridge bridge = new CodesysBridge();
+		bridge.connect();
+		bridge.populateNodes("",bridge.getClient(),Identifiers.RootFolder);
 		System.out.println("Press enter twice to exit...");
 		keyboard.nextLine();
+        System.out.println(bridge.getClient().readValue(0.0, TimestampsToReturn.Both,bridge.activeNodes.get("OP1.initial" +
+                "").getNodeId().get()).get().getValue());
 
 		keyboard.nextLine();
 		keyboard.close();
-		amq.closeBus();
+		//amq.closeBus();
 		// eventHandler.tell(msg, sender);
 	}
 
