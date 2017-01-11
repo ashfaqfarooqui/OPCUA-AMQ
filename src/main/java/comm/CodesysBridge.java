@@ -30,7 +30,7 @@ public class CodesysBridge extends OpcComm implements MessageListener {
 	public final List<String> monitoringNodes = Arrays.asList("ixArmRun", "ixGripping", "ixArmUp", "ixArmYPos");
 
 	CodesysBridge bridgeObj = null;
-	AMQBus amq;
+	static AMQBus amq;
 	boolean sendChangesToAmq = false;
 
 	public CodesysBridge() {
@@ -44,19 +44,19 @@ public class CodesysBridge extends OpcComm implements MessageListener {
 		final String url = "opc.tcp://192.168.0.10:4840";
 		Scanner keyboard = new Scanner(System.in);
 
-		//amq = new AMQBus();
-		//amq.setupBus(this);
+		amq = new AMQBus();
 		CodesysBridge bridge = new CodesysBridge();
-		bridge.connect();
-		bridge.populateNodes("",bridge.getClient(),Identifiers.RootFolder);
+		amq.setupBus(bridge);
+//		bridge.connect();
+		//bridge.populateNodes("",bridge.getClient(),Identifiers.RootFolder);
 		System.out.println("Press enter twice to exit...");
 		keyboard.nextLine();
-        System.out.println(bridge.getClient().readValue(0.0, TimestampsToReturn.Both,bridge.activeNodes.get("OP1.initial" +
-                "").getNodeId().get()).get().getValue());
+       // System.out.println(bridge.getClient().readValue(0.0, TimestampsToReturn.Both,bridge.activeNodes.get("OP1.initial" +
+         //       "").getNodeId().get()).get().getValue());
 
 		keyboard.nextLine();
 		keyboard.close();
-		//amq.closeBus();
+		amq.closeBus();
 		// eventHandler.tell(msg, sender);
 	}
 
@@ -70,6 +70,7 @@ public class CodesysBridge extends OpcComm implements MessageListener {
 	}
 	@Override
 	public void onMessage(Message message) {
+logger.info("got msg: "+message);
 
 		/**
 		 * 

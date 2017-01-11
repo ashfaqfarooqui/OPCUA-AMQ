@@ -47,7 +47,7 @@ public class AMQBus{
 			connection = connectionFactory.createConnection();
 
 			session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-			destination = session.createTopic("OPCUA Milo");
+			destination = session.createTopic("OPCUAMilo");
 			//Setup producer
 			producer = session.createProducer(destination);
 			
